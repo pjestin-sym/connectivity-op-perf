@@ -26,7 +26,8 @@ def get_timestamp_data() -> list[tuple[datetime, timedelta]]:
 
 def display_chart(timestamps: list[tuple[datetime, timedelta]])-> None:
   x: list[datetime] = []
-  y: list[float] = []
+  y1: list[float] = []
+  y2: list[int] = []
 
   min_creation_timestamp: datetime = timestamps[0][0]
   max_creation_timestamp: datetime = timestamps[-1][0]
@@ -35,26 +36,26 @@ def display_chart(timestamps: list[tuple[datetime, timedelta]])-> None:
   timestamp_index: int = 0
   while creation_timestamp < max_creation_timestamp:
     max_duration_over_period: timedelta = timedelta(seconds=0)
-    #duration_sum: timedelta = timedelta(seconds=0)
-    #duration_count: int = 0
+    creation_count: int = 0
     while timestamp_index < len(timestamps) and timestamps[timestamp_index][0] < creation_timestamp + SPAN:
-      #duration_sum += timestamps[timestamp_index][1]
-      #duration_count += 1
+      creation_count += 1
       if timestamps[timestamp_index][1] and timestamps[timestamp_index][1] > max_duration_over_period:
         max_duration_over_period = timestamps[timestamp_index][1]
       timestamp_index += 1
     if max_duration_over_period.seconds > 0:
       x.append(creation_timestamp)
-      #y.append((duration_sum / duration_count).seconds)
-      y.append(max_duration_over_period.seconds)
+      y1.append(max_duration_over_period.seconds)
+      y2.append(creation_count)
     creation_timestamp += SPAN
+  
+  fig, axs = plt.subplots(2)
+  fig.suptitle('Connectivity operator performance')
 
-  plt.plot(x, y)
+  axs[0].plot(x, y1)
+  axs[0].set_title('Maximum installation duration (s)')
+  axs[1].plot(x, y2)
+  axs[1].set_title('Number of installed releases')
 
-  plt.xlabel('Creation time')
-  plt.ylabel('Maximum installation duration (s)')
-
-  plt.title('Connectivity operator performance')
   plt.show()
 
 def main():

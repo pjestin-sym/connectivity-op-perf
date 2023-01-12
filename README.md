@@ -13,3 +13,7 @@ Pipenv
 pipenv install
 pipenv run python display_connectivity_op_perf.py
 ```
+
+## Example
+
+![Example graph](example-graph.png "Example graph")
