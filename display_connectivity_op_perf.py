@@ -6,9 +6,10 @@ import subprocess
 SPAN: timedelta = timedelta(hours=1)
 
 def get_install_timestamp(sym_connectivity) -> datetime | None:
-  for condition in sym_connectivity['status']['conditions']:
-    if 'reason' in condition and condition['reason'] == 'InstallSuccessful':
-      return datetime.strptime(condition['lastTransitionTime'], '%Y-%m-%dT%H:%M:%SZ')
+  if 'status' in sym_connectivity:
+    for condition in sym_connectivity['status']['conditions']:
+      if 'reason' in condition and condition['reason'] == 'InstallSuccessful':
+        return datetime.strptime(condition['lastTransitionTime'], '%Y-%m-%dT%H:%M:%SZ')
   return None
 
 def get_timestamp_data() -> list[tuple[datetime, timedelta]]:
@@ -42,12 +43,12 @@ def display_chart(timestamps: list[tuple[datetime, timedelta]])-> None:
       if timestamps[timestamp_index][1] and timestamps[timestamp_index][1] > max_duration_over_period:
         max_duration_over_period = timestamps[timestamp_index][1]
       timestamp_index += 1
-    if max_duration_over_period.seconds > 0:
+    if creation_count > 0:
       x.append(creation_timestamp)
       y1.append(max_duration_over_period.seconds)
       y2.append(creation_count)
     creation_timestamp += SPAN
-  
+
   fig, axs = plt.subplots(2)
   fig.suptitle('Connectivity operator performance')
 
